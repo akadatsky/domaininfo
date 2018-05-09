@@ -29,7 +29,7 @@ public class Main {
         cleanResultsOldLaunches();
         downloadFileFromURL(url, input);
         readFileIntoList();
-        listWithOnlyDomains();
+        listWithOnlyDomains(list);
         // find the most frequent domains and write "result.txt"
     }
 
@@ -95,8 +95,7 @@ public class Main {
         return list;
     }
 
-    private  static void listWithOnlyDomains(){
-        ArrayList<String> list = new ArrayList<String>();
+    private  static void listWithOnlyDomains(ArrayList<String>){
 
         for ( int i = 0; i < list.size(); i++) {
 
