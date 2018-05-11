@@ -95,18 +95,19 @@ public class Main {
         return list;
     }
 
-    private  static void listWithOnlyDomains(ArrayList<String>){
+    private  static List<String> listWithOnlyDomains(ArrayList<String>){
+
+        ArrayList<String> newList = new ArrayList<String>();
 
         for ( int i = 0; i < list.size(); i++) {
 
             String[] strToArray = list.get(i).split("/");
-
+            
             if (strToArray[0].startsWith("www.")) {
                 strToArray[0].replaceAll("www.", "");
             }
-            ArrayList<String> newList = new ArrayList<String>();
             newList.add(strToArray[0]);
-
         }
+        return list;
     }
 }
