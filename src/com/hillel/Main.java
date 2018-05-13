@@ -20,14 +20,13 @@ public class Main {
     static String output;
     static List<String> list = new ArrayList();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         readFromFile();
         cleanResultsOldLaunches("urls.txt");
         cleanResultsOldLaunches("output.txt");
         downloadFileFromURL(url, input);
         readFileIntoList();
         list = listWithOnlyDomains(input);
-
         writeToFile(topTenDomain(list));
     }
 
@@ -81,9 +80,14 @@ public class Main {
         }
     }
 
-    public static void readFromFile() throws IOException {
+    public static void readFromFile() {
         File file = new File("settings.txt");
-        Scanner scanner = new Scanner(file);
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
