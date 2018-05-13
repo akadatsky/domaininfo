@@ -1,20 +1,16 @@
 package com.hillel;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.nio.file.Files.newBufferedReader;
 
 
 public class Main {
@@ -22,15 +18,67 @@ public class Main {
     static String url;
     static String input;
     static String output;
-
+    static List<String> list = new ArrayList();
 
     public static void main(String[] args) throws IOException {
         readFromFile();
-        cleanResultsOldLaunches();
+        cleanResultsOldLaunches("urls.txt");
+        cleanResultsOldLaunches("output.txt");
         downloadFileFromURL(url, input);
         readFileIntoList();
-        listWithOnlyDomains(list);
-        // find the most frequent domains and write "result.txt"
+        list = listWithOnlyDomains(input);
+
+        writeToFile(topTenDomain(list));
+    }
+
+    public static List<String> topTenDomain(List<String> list) {
+        Map<String, Integer> map = countWords((ArrayList<String>) list);
+        List<String> mylist = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> pair : map.entrySet()) {
+            mylist.add(pair.getKey() + " " + pair.getValue());
+        }
+        return mylist;
+    }
+
+    public static Map<String, Integer> countWords(ArrayList<String> list) {
+        HashMap<String, Integer> result = new HashMap<String, Integer>();
+        for (int i = 0; i < list.size(); i++) {
+            String slovo = list.get(i);//разбиваем лист на строки
+            int num = 0;//число для каждого   лова
+            for (int j = 0; j < list.size(); j++) {
+                if (slovo.equals(list.get(j)))//подсчет количества слов
+                {
+                    num++;
+                }
+
+            }
+            result.put(slovo, num);
+
+            if (list.contains(slovo))//удаляем это слово из листа, т.к. оно уже использовано.
+            {
+                list.remove(slovo);
+            }
+        }
+
+        return result;
+    }
+
+
+    public static void writeToFile(List<String> list) {
+        try (FileWriter writer = new FileWriter(output, false)) {
+            for (int i = 0; i < list.size(); i++) {
+                String s = list.get(i).toString();
+                writer.write(s);
+                // запись по символам
+                writer.append('\n');
+                writer.append('E');
+
+                writer.flush();
+            }
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     public static void readFromFile() throws IOException {
@@ -55,8 +103,8 @@ public class Main {
         scanner.close();
     }
 
-    private static void cleanResultsOldLaunches() {
-        File file = new File("settings.txt");
+    private static void cleanResultsOldLaunches(String url) {
+        File file = new File(url);
         if (file.exists()) {
             try {
                 file.delete();
@@ -87,7 +135,7 @@ public class Main {
         String file = "settings.txt";
         List<String> list = new ArrayList<>();
 
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(file))) {
+        try (BufferedReader reader = newBufferedReader(Paths.get(file))) {
             list = reader.lines().collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,19 +143,27 @@ public class Main {
         return list;
     }
 
-    private  static List<String> listWithOnlyDomains(ArrayList<String>){
+    private static List<String> listWithOnlyDomains(String input) throws IOException {
+        List<String> newList = new ArrayList<String>();
+        String fileName = input.replaceAll("input=", "");
+        File file = new File(fileName);
+        List<String> strings = new ArrayList<String>();
+        Scanner sc = new Scanner(file);
 
-        ArrayList<String> newList = new ArrayList<String>();
+        try {
 
-        for ( int i = 0; i < list.size(); i++) {
+            sc = new Scanner(file);
 
-            String[] strToArray = list.get(i).split("/");
-            
-            if (strToArray[0].startsWith("www.")) {
-                strToArray[0].replaceAll("www.", "");
+            while (sc.hasNextLine()) {
+                List<String> line = Arrays.asList(sc.nextLine().trim().replaceAll("www.", "").split("/")[0]);
+                String newLine = line.get(0);
+                strings.add(newLine);
             }
-            newList.add(strToArray[0]);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            sc.close();
         }
-        return list;
+        return strings;
     }
 }
