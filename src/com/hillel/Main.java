@@ -8,7 +8,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 import static java.nio.file.Files.newBufferedReader;
 
@@ -26,7 +26,11 @@ public class Main {
         cleanResultsOldLaunches("output.txt");
         downloadFileFromURL(url, input);
         readFileIntoList();
-        list = listWithOnlyDomains(input);
+        try {
+            list = listWithOnlyDomains(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         writeToFile(topTenDomain(list));
     }
 
@@ -44,7 +48,7 @@ public class Main {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
         for (int i = 0; i < list.size(); i++) {
             String slovo = list.get(i);//разбиваем лист на строки
-            int num = 0;//число для каждого   лова
+            int num = 0;//число для каждого слова
             for (int j = 0; j < list.size(); j++) {
                 if (slovo.equals(list.get(j)))//подсчет количества слов
                 {
@@ -148,7 +152,6 @@ public class Main {
     }
 
     private static List<String> listWithOnlyDomains(String input) throws IOException {
-        List<String> newList = new ArrayList<String>();
         String fileName = input.replaceAll("input=", "");
         File file = new File(fileName);
         List<String> strings = new ArrayList<String>();
