@@ -22,15 +22,17 @@ public class Main {
 
     public static void main(String[] args) {
         readFromFile();
-        cleanResultsOldLaunches("urls.txt");
-        cleanResultsOldLaunches("output.txt");
+        cleanResultsOldLaunches(input);
+        cleanResultsOldLaunches(output);
         downloadFileFromURL(url, input);
         readFileIntoList();
+
         try {
             list = listWithOnlyDomains(input);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         writeToFile(topTenDomain(list));
     }
 
@@ -54,7 +56,6 @@ public class Main {
                 {
                     num++;
                 }
-
             }
             result.put(slovo, num);
 
@@ -63,10 +64,8 @@ public class Main {
                 list.remove(slovo);
             }
         }
-
         return result;
     }
-
 
     public static void writeToFile(List<String> list) {
         try (FileWriter writer = new FileWriter(output, false)) {
@@ -113,15 +112,12 @@ public class Main {
 
     private static void cleanResultsOldLaunches(String url) {
         File file = new File(url);
-        if (file.exists()) {
-            try {
-                file.delete();
-                file.createNewFile();
-            } catch (IOException e) {
-                System.out.println("Error");
-            }
-        }
+        if (file.exists())
+            file.delete();
+        else
+        System.out.println("Error");
     }
+
 
     public static void downloadFileFromURL(String path, String file) {
         URL url = null;
@@ -140,7 +136,7 @@ public class Main {
     }
 
     private static List<String> readFileIntoList() {
-        String file = "settings.txt";
+        String file = "urls.txt";
         List<String> list = new ArrayList<>();
 
         try (BufferedReader reader = newBufferedReader(Paths.get(file))) {
